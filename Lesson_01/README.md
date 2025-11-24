@@ -1,182 +1,185 @@
-Step 1 – Create a New OnShape Document
+Lesson 01 – Parametric Inflatable Tube Ring (HawaFrame)
+
+This is the first lesson in our Parametric Drone Design Series, where we build the foundational geometry of the HawaFrame:
+a fully parametric inflatable ring, controlled entirely by variables and constructed using OnShape's Sweep feature.
+
+This tubular ring establishes the core layout for all future lessons (arms, motor placement, mounts, ducts, and structural connectors).
+
+🎯 Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+Create and manage parametric variables in OnShape
+
+Build an inflatable torus-like tube ring driven by mission geometry
+
+Understand how prop size → motor radius → prop-tip radius → tube radius relate
+
+Use Sweep to extrude a circular profile along a circular path
+
+Prepare the correct geometry for Lesson 02 (arm placement + motor layout)
+
+📐 Overview of the Geometry
+
+All geometry in this lesson matches the Python Configurator (v4.1).
+The configurator computes:
+
+#prop_diameter
+#prop_radius
+#motor_radius               (safe spacing)
+#prop_tip_radius
+#clearance_prop_to_tube
+#tube_inner_radius
+#tube_OD
+#tube_center_radius
+#tube_outer_radius
+#ring_OD
+
+
+The tube has three important radii:
+
+tube_inner_radius → inside of the inflatable tube
+
+tube_center_radius → centerline path of the tube
+
+tube_outer_radius → outer surface of the tube
+
+In this lesson we will model the actual tube, not a flat ring.
+
+📁 Setup Instructions
 
 Create a new OnShape document:
-Name: Parametric Drone – Lesson 01 (Ring)
 
-Add a new Part Studio:
-Name: Ring_Studio
+Name: Parametric Drone – Lesson 01 (Inflatable Ring)
 
-Open the Variable Table (top-left fx icon).
+In Part Studio 1, enable the Variable Table (fx icon).
 
-2️⃣ Step 2 – Define Core Variables
+1️⃣ Step 1 — Define Variables
 
-In the Variable Table, add the following (you can use the exact numbers or adjust):
+Enter the following variables in OnShape exactly as shown:
 
-Name	Value	Notes
-#prop_diameter	660 mm	26-inch prop (example)
-#num_motors	4	Not used directly in this lesson
-#prop_radius	#prop_diameter / 2	Derived
-#arm_clearance_factor	0.3	Matches Python configurator (tweak later)
-#motor_radius	#prop_radius + (#arm_clearance_factor * #prop_diameter)	Center → motor
-#prop_tip_radius	#motor_radius + #prop_radius	Tip of prop disc
-#clearance_to_tube	30 mm	Gap from prop tip to inner tube wall
-#tube_OD	132 mm	Tube outer diameter (example)
-#tube_inner_radius	#prop_tip_radius + #clearance_to_tube	Inner wall of tube
-#tube_outer_radius	#tube_inner_radius + #tube_OD	Outer wall of tube
+Variable	Expression	Purpose
+#prop_diameter	660 mm	Example for 26-inch props
+#prop_radius	#prop_diameter / 2	Auto
+#arm_clearance_factor	0.3	Control motor spacing (nominal)
+#motor_radius_nominal	#prop_radius + (#arm_clearance_factor * #prop_diameter)	Base motor spacing
+#prop_prop_clearance	20 mm	Minimum prop–prop gap
+#motor_radius	(paste from configurator)	Actual safe motor radius
+#prop_tip_radius	#motor_radius + #prop_radius	Prop tip location
+#clearance_prop_to_tube	30 mm	Gap from prop tip to tube
+#tube_inner_radius	#prop_tip_radius + #clearance_prop_to_tube	Inside wall of tube
+#tube_OD	132 mm	Tube thickness (OD)
+#tube_center_radius	#tube_inner_radius + #tube_OD / 2	Sweep path radius
+#tube_outer_radius	#tube_inner_radius + #tube_OD	Outside of tube
+#ring_OD	2 * #tube_outer_radius	For reference
 
-✅ These relationships mirror the logic used in configurator_v4.py, so CAD and code stay in sync.
+You can paste the variable block straight from the Configurator’s output.
 
-3️⃣ Step 3 – Sketch the Ring (Top View)
+2️⃣ Step 2 — Sketch the Tube Path (Top Plane)
 
 Create a new sketch on the Top Plane.
 
-Draw two concentric circles, both centered at the origin:
+Draw a construction circle centered at the origin.
 
-Outer circle
+Dimension its radius as:
 
-Dimension: 2 * #tube_outer_radius
+#tube_center_radius
 
-Inner circle
 
-Dimension: 2 * #tube_inner_radius
+Fully constrain and finish the sketch.
 
-Make sure:
+This is the circular path that the tube will sweep around.
 
-Both circles are centered at the origin.
+Rename sketch → Tube_Path.
 
-The sketch is fully constrained.
+3️⃣ Step 3 — Sketch the Tube Cross-Section (Right Plane)
 
-This defines the cross-section of the ring in plan view.
+Create a new sketch on the Right Plane.
 
-4️⃣ Step 4 – Extrude the Ring
+Draw a horizontal construction line from the origin to the right.
 
-Finish the sketch.
+Dimension the line length to:
 
-Use Extrude → Solid → New.
+#tube_center_radius
 
-Set the thickness to something simple (for now):
 
-For inflatable concept: e.g. #tube_OD / 2
+(This positions the tube exactly where it belongs.)
 
-For rigid ring: e.g. 50 mm
+At the end of the line, draw a circle.
 
-You now have a 3D ring whose inner and outer diameters are fully driven by your variables.
-
-5️⃣ Step 5 – Play With Parameters
-
-Now try modifying:
-
-#prop_diameter
-
-Example: change from 660 mm → 750 mm
-
-#clearance_to_tube
-
-Example: 30 mm → 50 mm
+Dimension the circle’s diameter as:
 
 #tube_OD
 
-Example: 132 mm → 150 mm
 
-Each change should:
+Fully constrain and finish sketch.
 
-Resize the inner and outer diameters of the ring.
+Rename → Tube_Section.
 
-Keep the ring centered at the origin.
+4️⃣ Step 4 — Sweep the Tubular Ring (THIS is the real “extrusion”)
 
-Demonstrate parametric control visually.
+Now we create the true inflatable ring:
 
-Encourage students to:
+Go to Sweep.
 
-Take screenshots before/after.
+Profile → select the circle from Tube_Section.
 
-Note how minor variable tweaks produce large design effects.
+Path → select the circle from Tube_Path.
 
-6️⃣ Step 6 – Connect to the Python Configurator (Optional)
+Operation → New.
 
-In the /configurator folder you’ll find:
+Click OK.
 
-configurator_v4.py → a Tkinter app that:
+🎉 You have now created a fully parametric tubular ring.
 
-Visualizes props, motors, and tube ring.
+This is the exact inflatable geometry used in HawaFrame.
 
-Computes:
+5️⃣ Step 5 — Verify the Geometry
 
-#prop_diameter
+Use OnShape’s Measure Tool:
 
-#motor_radius
+From origin → inside of tube = #tube_inner_radius
 
-#prop_tip_radius
+From origin → outside of tube = #tube_outer_radius
 
-#tube_inner_radius
+From origin → mid-thickness = #tube_center_radius
 
-#tube_outer_radius
+All values should match the configurator’s output.
 
-Prints a ready-to-paste OnShape variable block.
+6️⃣ Step 6 — Save Your Work
 
-Typical Python output (example):
+Rename the part:
 
-#prop_diameter = 660 mm
-#num_motors = 4
-#motor_radius = 528 mm
-#prop_radius = 330 mm
-#prop_tip_radius = 858 mm
-#clearance_prop_to_tube = 30 mm
-#tube_OD = 132 mm
-#tube_inner_radius = 888 mm
-#tube_center_radius = 954 mm
-#tube_outer_radius = 1020 mm
-#ring_OD = 2040 mm
+Ring_v1
 
 
-You can copy/paste these into OnShape’s variable table to:
+This ring is now ready for Lesson 2, where we will:
 
-Sync CAD with your configuration.
+place motors
 
-Rapidly explore “what-if” scenarios (prop size, clearance, tube OD).
+build parametric arms
 
-Make this lesson feel like a real engineering workflow rather than a toy example.
+create symmetric or asymmetric layouts
 
-7️⃣ Step 7 – Export and Save
+generate OnShape assemblies driven by the same variables
 
-When you’re happy with the parametric ring:
+🎓 What’s Next
 
-Rename the part: Ring_v1
+Proceed to:
+Lesson 02 – Parametric Arms & Motor Layout
 
-Optionally export:
+In that lesson you will:
 
-STEP file → for future simulation / FEA
+attach arms to the ring
 
-DXF of the sketch → for laser-cut templates or documentation
+position motors using the motor radius
 
-This ring will serve as the base geometry for future lessons:
+construct polar patterns (4, 6, 8 motors)
 
-Arm placement
+build swivel, tilt, and mount geometry
 
-Motor mounts
+🙌 Contributions
 
-Load hooks and release mechanisms
+If you improve the variables, add checks, or generate new functions from the Configurator, please submit a Pull Request or Issue.
 
-Full HawaFrame assemblies
-
-📚 Next Steps (Lesson 02 Preview)
-
-Lesson 02 – Parametric Arm Layout
-
-Planned topics:
-
-Using #motor_radius to place motors on a circle.
-
-Creating a parametric polar pattern for 4 / 6 / 8 motors.
-
-Preparing for full drone configurations driven by the same variables as this ring.
-
-🙌 Contributions & Feedback
-
-If you:
-
-Try this lesson
-
-Improve the variable set
-
-Add your own constraints or features
+This repository is meant to be a living educational engineering tool.
